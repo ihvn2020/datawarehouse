@@ -19,7 +19,7 @@ class PBS_Patients{
 	public function read(){
 		//select all data
 		$query = "SELECT
-					patient_uuid,
+					datim_id, patient_uuid,
 				FROM
 					" . $this->table_name . "
 			";
@@ -34,7 +34,28 @@ class PBS_Patients{
 	
 	
 
+public function getPatients($datim){
 
+//echo "got here";
+// query to count all data
+$query= "SELECT 
+							patient_id
+				FROM
+						" . $this->table_name . "
+				WHERE datim_id = '$datim'
+				";
+
+// prepare query statement
+$stmt = $this->conn->prepare( $query );
+
+$stmt->execute();
+
+$row = $stmt->fetchAll(PDO::FETCH_COLUMN);
+//$datim_id = $row['total_rows'];
+//$total_rows = $row['total_rows'];
+//print_r($row);
+return $row;
+}
 public function countAll(){
 
 // query to count all data

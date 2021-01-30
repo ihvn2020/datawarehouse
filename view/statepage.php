@@ -45,15 +45,15 @@ $pvls = new PVLS_Patients($factdb);
 $age = new Age_Patients($factdb);
 $facilities = new All_Facilities($factdb);
 
-$year=date("Y")+1;
-extract($fact_years->getQuarter((new DateTime())->modify('+3 Months')));
+$year=date("Y");
+extract($fact_years->getQuarter((new DateTime())));
 $quarter=$quart;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // collect value of input field
     $year = $_POST['year'];
 	$quarter = $_POST['quarter'];
 	$facilityid = $_POST['facility'];
-    
+	echo $facilitynameee = $_POST['test_text'];
 
 }
 	
@@ -110,43 +110,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 //$data=0;
 if(array_key_exists('patientlist',$_POST)){
-	if(empty($state)) {
-	$a= explode(",",implode($totalPatients->getPatientsList('2',$_POST['year'],$_POST['quarter']),","));
+	if(empty($_POST['facility'])) {
+	$a= explode(",",implode($totalPatients->getPatientsListState($_POST['year'],$_POST['quarter'],$statepage_id),","));
 	exportLists($a);}
 	else { 
-	$a= explode(",",implode($totalPatients->getPatientsListState('2',$_POST['year'],$_POST['quarter'],$_POST['state']),","));
+	$a= explode(",",implode($totalPatients->getPatientsListFacility($_POST['year'],$_POST['quarter'],$_POST['facility']),","));
 	exportLists($a);
 	}
 	
 }	
 if(array_key_exists('activelist',$_POST)){
-	if(empty($state)) {
-	$a= explode(",",implode($txcurr->getPatientsList('2',$_POST['year'],$_POST['quarter']),","));
+	if(empty($_POST['facility'])) {
+		//echo "here";exit;
+	$a= explode(",",implode($txcurr->getPatientsListState('2',$_POST['year'],$_POST['quarter'],$statepage_id),","));
 	exportLists($a);}
 	else { 
-	$a= explode(",",implode($txcurr->getPatientsListState('2',$_POST['year'],$_POST['quarter'],$_POST['state']),","));
+	$a= explode(",",implode($txcurr->getPatientsListFacility('2',$_POST['year'],$_POST['quarter'],$_POST['facility']),","));
 	exportLists($a);
 	}
 	
 }	
 if(array_key_exists('ltfulist',$_POST)){
-	if(empty($state)) {
-	$a= explode(",",implode($ltfu->getPatientsDash('5',$_POST['year'],$_POST['quarter']),","));
+	if(empty($_POST['facility'])) {
+	$a= explode(",",implode($ltfu->getPatientsDashState('5',$_POST['year'],$_POST['quarter'],$statepage_id),","));
 	exportLists($a);
 	}
 	else { 
-	$a= explode(",",implode($ltfu->getPatientsDash('5',$_POST['year'],$_POST['quarter'],$_POST['state']),","));
+	$a= explode(",",implode($ltfu->getPatientsDashFacility('5',$_POST['year'],$_POST['quarter'],$_POST['facility']),","));
 	exportLists($a);
 	}
 	
 }	
 if(array_key_exists('newlist',$_POST)){
-	if(empty($state)) {
-	$a= explode(",",implode($txnew->getPatientsDash('1',$_POST['year'],$_POST['quarter']),","));
+	if(empty($_POST['facility'])) {
+	$a= explode(",",implode($txnew->getPatientsDash('1',$_POST['year'],$_POST['quarter'],$statepage_id),","));
 	exportLists($a);
 	}
 	else { 
-	$a= explode(",",implode($txnew->getPatientsDash('1',$_POST['year'],$_POST['quarter'],$_POST['state']),","));
+	$a= explode(",",implode($txnew->getPatientsDash('1',$_POST['year'],$_POST['quarter'],$_POST['facility']),","));
 	exportLists($a);
 	}
 	
@@ -155,7 +156,7 @@ if(array_key_exists('facilitylist',$_POST)){
 				if(empty($state)) {
 				exportList($facilities->read());}
 				else {
-				exportList($facilities->read($state));}
+				exportList($facilities->read($facility));}
 }	
 function exportLists($a){
 	
@@ -457,11 +458,11 @@ $(document).ready( function () {
 								?> 
 								  
 							</div>
-							State: <div  class="form-group col-md-2">
+							Facility: <div  class="form-group col-md-2">
                               	  <?php
 											
 								  			$stmts = $fact_facility->readf($statepage_id);												
-				                           echo "<select name='facility' class='form-control is-valid'>";
+				                           echo "<select name='facility' class='form-control is-valid' onchange='document.getElementById('text_content').value=this.options[this.selectedIndex].text'>";
 											echo "<option value=''>Select Facility</option>";
 												while ($row_facts = $stmts->fetch(PDO::FETCH_ASSOC)){
 														extract($row_facts);
@@ -476,7 +477,7 @@ $(document).ready( function () {
 													}
 											echo "</select>";
 								?> 
-								  
+								  <input type="hidden" name="test_text" id="text_content" value="" />
 							</div>
 							  <div class="form-group col-md-2">
                                  <button type="submit"  name="submit"class="mb-2 btn btn-sm btn-success mr-1">Search</button>
@@ -504,7 +505,8 @@ $(document).ready( function () {
                   <div class="card-body p-0 d-flex">
                     <div class="d-flex flex-column m-auto">
                       <div class="stats-small__data text-center"><span class="d-none d-md-inline-block" style="color:#17c671";><form method="post">
-    <input type="submit" name="facilitylist" id="facilitylist" value="Download List" class="mb-2 btn btn-success mr-2"/><br/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $state;?>" name="state" /><input type="hidden" value="<?php echo $year;?>" name="year" />
+    <input type="submit" style="background-image: url('../images/download.png'); background-color: white; display: block; margin-left: auto;  margin-right: auto;
+  width: 50%;border:none; width: 32px; height: 32px;" name="facilitylist" id="facilitylist" value=""/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $facilityid;?>" name="facility" /><input type="hidden" value="<?php echo $year;?>" name="year" />
 </form></span>
                         <span class="stats-small__label text-uppercase"style="color:black;font-weight:bold">No of Facilities</span>
 						
@@ -532,7 +534,8 @@ $(document).ready( function () {
                 <div class="stats-small stats-small--1 card card-small">
                   <div class="card-body p-0 d-flex">
                     <div class="d-flex flex-column m-auto"><span class="d-none d-md-inline-block" style="color:#17c671";><form method="post">
-    <input type="submit" name="patientlist" id="patientlist" value="Download List" class="mb-2 btn btn-success mr-2"/><br/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $state;?>" name="state" /><input type="hidden" value="<?php echo $year;?>" name="year" />
+    <input type="submit" style="background-image: url('../images/download.png'); background-color: white; display: block; margin-left: auto;  margin-right: auto;
+  width: 50%;border:none; width: 32px; height: 32px;" name="patientlist" id="patientlist" value="" /><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $facilityid;?>" name="facility" /><input type="hidden" value="<?php echo $year;?>" name="year" />
 </form></span>
 					<a href="#total" onClick="return false;" >
                       <div class="stats-small__data text-center" id="one">
@@ -554,7 +557,8 @@ $(document).ready( function () {
                 <div class="stats-small stats-small--1 card card-small">
                   <div class="card-body p-0 d-flex">
                     <div class="d-flex flex-column m-auto"><span class="d-none d-md-inline-block" style="color:#17c671";><form method="post">
-    <input type="submit" name="activelist" id="activelist" value="Download List" class="mb-2 btn btn-success mr-2"/><br/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $state;?>" name="state" /><input type="hidden" value="<?php echo $year;?>" name="year" />
+    <input type="submit" style="background-image: url('../images/download.png'); background-color: white; display: block; margin-left: auto;  margin-right: auto;
+  width: 50%;border:none; width: 32px; height: 32px;" name="activelist" id="activelist" value="" /><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $facilityid;?>" name="facility" /><input type="hidden" value="<?php echo $year;?>" name="year" />
 </form></span>
 					<a href="#txcurr" onClick="return false;" >
                       <div class="stats-small__data text-center" id="two">
@@ -572,7 +576,8 @@ $(document).ready( function () {
                 <div class="stats-small stats-small--1 card card-small">
                   <div class="card-body p-0 d-flex">
                     <div class="d-flex flex-column m-auto"><span class="d-none d-md-inline-block" style="color:#17c671";><form method="post">
-    <input type="submit" name="newlist" id="newlist" value="Download List" class="mb-2 btn btn-success mr-2"/><br/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $state;?>" name="state" /><input type="hidden" value="<?php echo $year;?>" name="year" />
+    <input type="submit" style="background-image: url('../images/download.png'); background-color: white; display: block; margin-left: auto;  margin-right: auto;
+  width: 50%;border:none; width: 32px; height: 32px;" name="newlist" id="newlist" value=""/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $facilityid;?>" name="facility" /><input type="hidden" value="<?php echo $year;?>" name="year" />
 </form></span>
 					<a href="#newpatients" onClick="return false;" >
                       <div class="stats-small__data text-center" id="three">
@@ -590,7 +595,8 @@ $(document).ready( function () {
                 <div class="stats-small stats-small--1 card card-small">
                   <div class="card-body p-0 d-flex">
                     <div class="d-flex flex-column m-auto"><span class="d-none d-md-inline-block" style="color:#17c671";><form method="post">
-    <input type="submit" name="ltfulist" id="ltfulist" value="Download List" class="mb-2 btn btn-success mr-2"/><br/><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $state;?>" name="state" /><input type="hidden" value="<?php echo $year;?>" name="year" />
+    <input type="submit" style="background-image: url('../images/download.png'); background-color: white; display: block; margin-left: auto;  margin-right: auto;
+  width: 50%;border:none; width: 32px; height: 32px;" name="ltfulist" id="ltfulist" value="" /><input type="hidden" value="<?php echo $quarter;?>" name="quarter" /><input type="hidden" value="<?php echo $facilityid;?>" name="facility" /><input type="hidden" value="<?php echo $year;?>" name="year" />
 </form></span>
 					<a href="#dispatched" onClick="return false;" >
                       <div class="stats-small__data text-center" id="five">
@@ -841,7 +847,7 @@ Highcharts.chart('newpatients', {
         text: ''
     },
     xAxis: {
-        categories: ['Male','Female']
+        categories: ['Female','Male']
     },
     yAxis: {
         min: 0,
@@ -879,7 +885,7 @@ Highcharts.chart('newpatients', {
     },
     series: [{
         name: '',
-        data: [<?php if(empty($facilityid)){echo $totalPatients->sumPatientsState('8',$year,$quarter,$statepage_id);}else{echo $totalPatients->sumPatientsState('8',$year,$quarter,$statepage_id);}?>,<?php if(empty($facilityid)){echo $totalPatients->sumPatientsState('9',$year,$quarter,$statepage_id);}else{echo $totalPatients->sumPatientsState('9',$year,$quarter,$statepage_id);}?>]
+        data: [<?php if($female !=NULL) echo $female; else echo '0';?>,<?php if($male !=NULL) echo $male; else echo '0';?>]
     }]
 });
 		</script>
@@ -923,7 +929,7 @@ Highcharts.chart('rejreasonsperyear', {
 
     series: [{
         name: '',
-        data: [<?php $stmt= $age->sumage('10',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php $stmt= $age->sumage('11',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php $stmt= $age->sumage('12',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php $stmt= $age->sumage('13',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php $stmt= $age->sumage('14',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('15',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('16',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('17',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('18',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('19',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('20',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php $stmt= $age->sumage('21',$year,$quarter); if($stmt !=NULL) echo $stmt; else echo '0';?>]
+        data: [<?php if(empty($facilityid)){ if(empty($state)){$stmt= $age->sumage('10',$year,$quarter);}else{$stmt= $age->sumageState('10',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('10',$year,$quarter,$facilityid);} if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('11',$year,$quarter);}else{$stmt= $age->sumageState('11',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('11',$year,$quarter,$facilityid);} if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('12',$year,$quarter);}else{$stmt= $age->sumageState('12',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('12',$year,$quarter,$facilityid);} if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('13',$year,$quarter);}else{$stmt= $age->sumageState('13',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('13',$year,$quarter,$facilityid);} if($stmt !=NULL) echo $stmt; else echo '0';?>, <?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('14',$year,$quarter);}else{$stmt= $age->sumageState('14',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('14',$year,$quarter,$facilityid);} if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('15',$year,$quarter);} else{$stmt= $age->sumageState('15',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('15',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('16',$year,$quarter);} else{$stmt= $age->sumageState('16',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('16',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('17',$year,$quarter);} else{$stmt= $age->sumageState('17',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('17',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('18',$year,$quarter);} else{$stmt= $age->sumageState('18',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('18',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('19',$year,$quarter);} else{$stmt= $age->sumageState('19',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('19',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('20',$year,$quarter);} else{$stmt= $age->sumageState('20',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('20',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>,<?php if(empty($facilityid)){if(empty($state)){$stmt= $age->sumage('21',$year,$quarter);} else{$stmt= $age->sumageState('21',$year,$quarter,$state);}}else{$stmt= $age->sumageFacility('21',$year,$quarter,$facilityid);}if($stmt !=NULL) echo $stmt; else echo '0';?>]
     }],
 
     

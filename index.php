@@ -80,6 +80,11 @@ function clean($str) {
 				header("location: view/statepage.php");
 						
 			}
+			else if ($_SESSION['group_id'] == "4")//STATE USER
+			{
+				header("location: admin/read_users.php");
+						
+			}
 				
 					
 				session_write_close();

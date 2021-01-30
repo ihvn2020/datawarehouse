@@ -3,7 +3,7 @@ class Reports{
 
 	// database connection and table name
 	private $conn;
-	private $table_name = "reports";
+	private $table_name = "radet_fact";
 
 	// object properties
 	public $id;

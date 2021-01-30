@@ -20,7 +20,7 @@ class TxCurr_Patients{
 		//select all data
 		
 		$query= "SELECT 
-						datim_id,  COUNT(patient_uuid) AS `total_rows`
+						datim_id,  COUNT(patient_unique_id) AS `total_rows`
 				FROM
 						" . $this->table_name . "
 				GROUP BY
@@ -35,16 +35,16 @@ class TxCurr_Patients{
 	
 	
 
-public function getPatients($datim){
+public function getPatients($datim,$q,$y){
 
 //echo "got here";
 // query to count all data
 $query= "SELECT 
-						patient_uuid
+							patient_unique_id
 				FROM
 						" . $this->table_name . "
 				WHERE 
-						current_art_status = 'active' AND datim_id = '$datim'
+						current_art_status = 'active' AND datim_id = '$datim' AND financial_quarter = '$q' and financial_year='$y'
 				";
 
 // prepare query statement
@@ -59,16 +59,16 @@ $row = $stmt->fetchAll(PDO::FETCH_COLUMN);
 return $row;
 }
 
-public function countAll(){
+public function countAll($q,$y){
 
 //echo "got here";
 // query to count all data
 $query= "SELECT 
-						datim_id,  COUNT(radet_id) AS `total_rows`
+						datim_id,  COUNT(patient_unique_id) AS `total_rows`
 				FROM
 						" . $this->table_name . "
 				WHERE 
-						current_art_status = 'active'
+						current_art_status = 'active' AND financial_quarter = '$q' and financial_year='$y'
 				GROUP BY
 						datim_id";
 
@@ -97,6 +97,34 @@ $query= "SELECT
 					facility_dm.datim_id = c.datim_id
 				WHERE
 					facility_dm.state_id='$state'
+				AND 
+						fy='$fy' AND q='$q' AND cohort_id='$cohort_id'
+				";
+
+// prepare query statement
+$stmt = $this->conn->prepare( $query );
+
+$stmt->execute();
+
+$row = $stmt->fetchAll(PDO::FETCH_COLUMN);
+//$datim_id = $row['total_rows'];
+//$total_rows = $row['total_rows'];
+//print_r($row);
+return $row;
+}
+public function getPatientsListFacility($cohort_id,$fy,$q,$facility){
+//SET group_concat_max_len = 2000000;
+//echo "got here";
+// query to count all data
+
+//$q="SET group_concat_max_len = 100000;";GROUP_CONCAT(json_object SEPARATOR ', ')  as list
+$query= "SELECT 
+						GROUP_CONCAT(json_object SEPARATOR ', ')  as list
+				FROM
+						" . $this->table_name1 . " 
+				
+				WHERE
+					datim_id='$facility'
 				AND 
 						fy='$fy' AND q='$q' AND cohort_id='$cohort_id'
 				";

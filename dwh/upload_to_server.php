@@ -92,10 +92,15 @@ $uploads = new Uploads($db);
                   });*/
 
                   $files = glob('../tmp/*.'.$uploadId);
-                    usort($files, function($a, $b) {
-                        return filemtime($a) > filemtime($b);
-                    });
 
+                  usort($files, function($a, $b) {
+                    $tmpFileNameA = getFileName($a);
+                    $tmpFileNameB = getFileName($b);
+                    //return filemtime($a) > filemtime($b);
+                    return $tmpFileNameA > $tmpFileNameB;
+                });
+                    
+                    //echo "mergin fiels";
                     mergeFiles2($files, $fileName);
                     deleteTmpFiles($files);
 					$count=unzip($_POST["title"]);
@@ -112,7 +117,14 @@ function unzip($filename){
 	$i = $zip->numFiles;
 	return $i;
 
-	}
+}    
+    
+function getFileName($file)
+{
+    $path_parts = pathinfo($file);
+    return $path_parts["filename"];
+    
+}
 
 function mergeFiles($arrayOfFiles, $outputPath) {
 
@@ -143,18 +155,22 @@ function mergeFiles($arrayOfFiles, $outputPath) {
 function mergeFiles2($arrayOfFiles, $outputPath)
 {
     $chunkSize = 2048 * 1024; //~ bytes
-//$dest = fopen($outputPath,"a");
- 
-foreach ($arrayOfFiles as $f) {
- 
-$fh = fopen( $f, 'rb' );
-$buffer = fread( $fh, $chunkSize );
-fclose( $fh );
- 
-$total = fopen( $outputPath, 'ab' );
-$write = fwrite( $total, $buffer );
-fclose( $total );
-}
+    //$dest = fopen($outputPath,"a");
+   // echo "mergin files";
+    //var_dump($arrayOfFiles);
+    foreach ($arrayOfFiles as $f) {
+    
+        $fh = fopen( $f, 'rb' );
+        $buffer = fread( $fh, $chunkSize );
+        //fclose( $fh );
+        
+        $total = fopen( $outputPath, 'ab' );
+        $write = fwrite( $total, $buffer );
+        fclose( $total );
+        
+
+    }
+   // echo "done merging files";
     //}
 }
 function deleteTmpFiles($arrayOfFiles)

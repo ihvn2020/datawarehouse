@@ -244,7 +244,7 @@ $(document).ready( function () {
 			
             <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
 			 <li class="nav-item dropdown">
-                  <a class="nav-link text-nowrap px-3" data-toggle="" href="" role="button" aria-haspopup="true" aria-expanded="false">
+                  <a class="nav-link text-nowrap px-3" data-toggle="" href="home.php" role="button" aria-haspopup="true" aria-expanded="false">
                     <img class="user-avatar rounded-circle mr-2" src="../resources/images/login_icon.ico" alt="User Avatar">
                     <span class="d-none d-md-inline-block" style="color:#17c671";><button type="button" class="mb-2 btn btn-success mr-2"><strong>IHVN Dashboard</strong></button></span>
 				   </a>
@@ -255,6 +255,8 @@ $(document).ready( function () {
 			         
               <ul class="navbar-nav border-right flex-row ">
 			
+				<li><a class="dropdown-item text-danger" href="compareind.php">
+                     <i class="material-icons text-danger">&#xE879;</i> <b>Compare Indicators</b></a></li>
                 <li><a class="dropdown-item text-danger" href="reports.php">
                      <i class="material-icons text-danger">&#xE879;</i> <b>Generate Reports</b></a></li>
 											
@@ -444,7 +446,7 @@ echo "</table>";}?>
           <footer class="main-footer d-flex p-2 px-3 bg-white border-top">
             <ul class="nav">
               <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
+                <a class="nav-link" href="home.php">Home</a>
               </li>
               
             </ul>

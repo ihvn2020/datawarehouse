@@ -79,27 +79,27 @@ class PFacts_Years{
 		$year;
 		switch($m) {
 			case $m >= 1 && $m <= 3:
-				$start = '01/01/'.$y;
+				$start = $y.'/01/01';
 				$end = (new DateTime('03/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
-				$quart = '1';
-				$year = $y;
-				break;
-			case $m >= 4 && $m <= 6:
-				$start = '04/01/'.$y;
-				$end = (new DateTime('06/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
 				$quart = '2';
 				$year = $y;
 				break;
-			case $m >= 7 && $m <= 9:
-				$start = '07/01/'.$y;
-				$end = (new DateTime('09/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
+			case $m >= 4 && $m <= 6:
+				$start = $y.'/04/01';
+				$end = (new DateTime('06/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
 				$quart = '3';
 				$year = $y;
 				break;
-			case $m >= 10 && $m <= 12:
-				$start = '10/01/'.$y;
-				$end = (new DateTime('12/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
+			case $m >= 7 && $m <= 9:
+				$start = $y.'/07/01';
+				$end = (new DateTime('09/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
 				$quart = '4';
+				$year = $y;
+				break;
+			case $m >= 10 && $m <= 12:
+				$start = $y.'/10/01';
+				$end = (new DateTime('12/1/'.$y))->modify('Last day of this month')->format('Y/m/d');
+				$quart = '1';
 				$year = date('Y', strtotime('+1 year'));
 				break;
 		}

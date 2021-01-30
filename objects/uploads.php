@@ -22,8 +22,10 @@ class Uploads{
 	public function setUploadDetails($filename,$filecount,$user_id){
 		// create the category
 		// insert query
+		
+		$facid = substr($filename, 5, 11);
 		$query = "INSERT INTO user_uploads
-				SET id = ?, filename = ?, filecount = ?, date_uploaded = ?, uploaded_by = ?, status = ?";
+				SET id = ?, filename = ?, filecount = ?, datim_id=?, date_uploaded = ?, uploaded_by = ?, status = ?";
 
 		// prepare query statement
 		$stmt = $this->conn->prepare($query);
@@ -31,6 +33,7 @@ class Uploads{
 		// sanitize
 		$this->filename=htmlspecialchars(strip_tags($filename));
 		$this->filecount=htmlspecialchars(strip_tags($filecount));
+		$this->datim_id=htmlspecialchars(strip_tags($facid));
 		$this->date_uploaded=htmlspecialchars(strip_tags(date("Y-m-d")));
 		$this->user_id=htmlspecialchars(strip_tags($user_id));
 		$this->status=htmlspecialchars(strip_tags($this->status));
@@ -40,9 +43,10 @@ class Uploads{
 				$stmt->bindParam(1, $this->id);
 				$stmt->bindParam(2, $this->filename);
 				$stmt->bindParam(3, $this->filecount);
-				$stmt->bindParam(4, $this->date_uploaded);
-				$stmt->bindParam(5, $this->user_id);
-				$stmt->bindParam(6, $this->status);
+				$stmt->bindParam(4, $this->datim_id);
+				$stmt->bindParam(5, $this->date_uploaded);
+				$stmt->bindParam(6, $this->user_id);
+				$stmt->bindParam(7, $this->status);
 			
 				$stmt->execute();
 			
